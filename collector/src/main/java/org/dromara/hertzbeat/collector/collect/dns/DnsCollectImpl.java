@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dromara.hertzbeat.collector.collect.dns;
 
 import com.google.common.collect.Lists;
@@ -84,7 +101,7 @@ public class DnsCollectImpl extends AbstractCollect {
             return;
         }
 
-        DNSResolveResult dnsResolveResult;
+        DnsResolveResult dnsResolveResult;
         try {
             // run dig command
             dnsResolveResult = dig(metrics.getDns());
@@ -132,7 +149,7 @@ public class DnsCollectImpl extends AbstractCollect {
     /**
      * run dig command
      */
-    private DNSResolveResult dig(DnsProtocol dns) throws IOException {
+    private DnsResolveResult dig(DnsProtocol dns) throws IOException {
         StopWatch responseTimeStopWatch = new StopWatch("responseTime");
         responseTimeStopWatch.start();
 
@@ -148,8 +165,8 @@ public class DnsCollectImpl extends AbstractCollect {
         return resolve(response, responseTimeStopWatch.getLastTaskTimeMillis());
     }
 
-    private DNSResolveResult resolve(Message message, Long responseTime) {
-        return DNSResolveResult.builder()
+    private DnsResolveResult resolve(Message message, Long responseTime) {
+        return DnsResolveResult.builder()
                 .headerInfo(getHeaderInfo(message, responseTime))
                 .questionList(getSectionInfo(message, Section.QUESTION))
                 .answerList(getSectionInfo(message, Section.ANSWER))
@@ -173,13 +190,13 @@ public class DnsCollectImpl extends AbstractCollect {
     }
 
     private List<String> getSectionInfo(Message message, int section) {
-        List<RRset> currentRRsetList = message.getSectionRRsets(section);
-        if (currentRRsetList == null || currentRRsetList.size() <= 0) {
+        List<RRset> currentSetList = message.getSectionRRsets(section);
+        if (currentSetList == null || currentSetList.size() <= 0) {
             return Lists.newArrayList();
         }
 
-        List<String> infoList = Lists.newArrayListWithCapacity(currentRRsetList.size());
-        currentRRsetList.forEach(res -> infoList.add(res.toString()));
+        List<String> infoList = Lists.newArrayListWithCapacity(currentSetList.size());
+        currentSetList.forEach(res -> infoList.add(res.toString()));
 
         return infoList;
     }
@@ -189,7 +206,7 @@ public class DnsCollectImpl extends AbstractCollect {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class DNSResolveResult {
+    private static class DnsResolveResult {
         private Map<String, String> headerInfo;
         /** example: www.google.com.		140	IN	A	192.133.77.133 **/
         private List<String> questionList;

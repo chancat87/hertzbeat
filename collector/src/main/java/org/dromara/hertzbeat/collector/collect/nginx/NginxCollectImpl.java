@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dromara.hertzbeat.collector.collect.nginx;
 
 import lombok.AllArgsConstructor;
@@ -172,19 +189,18 @@ public class NginxCollectImpl extends AbstractCollect {
     /**
      * 解析nginx自带ngx_http_stub_status_module模块暴露信息
      *
-     * @param builder
-     * @param resp
-     * @param metrics
-     * @param responseTime
+     * @param builder builder
+     * @param resp resp
+     * @param metrics metrics
+     * @param responseTime responseTime
      */
     private void parseNginxStatusResponse(CollectRep.MetricsData.Builder builder, String resp, Metrics metrics,
                                           Long responseTime) {
-        /** example
-         * Active connections: 2
-         * server accepts handled requests
-         *  4 4 2
-         * Reading: 0 Writing: 1 Waiting: 1
-         */
+        //example
+        //Active connections: 2
+        //server accepts handled requests
+        //4 4 2
+        //Reading: 0 Writing: 1 Waiting: 1
         List<String> aliasFields = metrics.getAliasFields();
         Map<String, Object> metricMap = regexNginxStatusMatch(resp, metrics.getAliasFields().size());
         // 返回数据
@@ -207,26 +223,25 @@ public class NginxCollectImpl extends AbstractCollect {
     /**
      * 解析ngx_http_reqstat_module模块暴露信息
      *
-     * @param builder
-     * @param resp
-     * @param metrics
-     * @param responseTime
+     * @param builder builder
+     * @param resp resp
+     * @param metrics metrics
+     * @param responseTime responseTime
      */
     private void parseReqStatusResponse(CollectRep.MetricsData.Builder builder, String resp, Metrics metrics,
                                         Long responseTime) {
-        /** example
-         * zone_name       key     max_active      max_bw  traffic requests        active  bandwidth
-         * imgstore_appid  43    27      6M      63G     374063  0        0
-         * imgstore_appid  53    329     87M     2058G   7870529 50      25M
-         * server_addr     10.128.1.17     2        8968   24M     1849    0        0
-         * server_addr     127.0.0.1       1       6M      5G      912     1        0
-         * server_addr     180.96.x.1   3358    934M    27550G  141277391       891     356M
-         * server_addr     180.96.x.2   78      45M     220G    400704  0        0
-         * server_addr     180.96.x.3   242     58M     646G    2990547 42      7M
-         * server_name     d.123.sogou.com 478     115M    2850G   30218726        115     39M
-         * server_name     dl.pinyin.sogou.com     913     312M    8930G   35345453        225     97M
-         * server_name     download.ie.sogou.com   964     275M    7462G   7979817 297     135M
-         */
+        //example
+        //zone_name       key     max_active      max_bw  traffic requests        active  bandwidth
+        //imgstore_appid  43    27      6M      63G     374063  0        0
+        //imgstore_appid  53    329     87M     2058G   7870529 50      25M
+        //server_addr     10.128.1.17     2        8968   24M     1849    0        0
+        //server_addr     127.0.0.1       1       6M      5G      912     1        0
+        //server_addr     180.96.x.1   3358    934M    27550G  141277391       891     356M
+        //server_addr     180.96.x.2   78      45M     220G    400704  0        0
+        //server_addr     180.96.x.3   242     58M     646G    2990547 42      7M
+        //server_name     d.123.sogou.com 478     115M    2850G   30218726        115     39M
+        //server_name     dl.pinyin.sogou.com     913     312M    8930G   35345453        225     97M
+        //server_name     download.ie.sogou.com   964     275M    7462G   7979817 297     135M
         List<ReqSatusResponse> reqSatusResponses = regexReqStatusMatch(resp);
         List<String> aliasFields = metrics.getAliasFields();
 

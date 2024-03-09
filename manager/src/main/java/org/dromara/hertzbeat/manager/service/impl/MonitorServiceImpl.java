@@ -62,7 +62,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -765,8 +765,8 @@ public class MonitorServiceImpl implements MonitorService {
 
     @Override
     public void updateAppCollectJob(Job job) {
-        List<Monitor> monitors = monitorDao.findMonitorsByAppEquals(job.getApp()).
-                stream().filter(monitor -> monitor.getStatus() != CommonConstants.UN_MANAGE_CODE)
+        List<Monitor> monitors = monitorDao.findMonitorsByAppEquals(job.getApp())
+                .stream().filter(monitor -> monitor.getStatus() != CommonConstants.UN_MANAGE_CODE)
                 .collect(Collectors.toList());
         List<CollectorMonitorBind> monitorBinds = collectorMonitorBindDao.findCollectorMonitorBindsByMonitorIdIn(
                 monitors.stream().map(Monitor::getId).collect(Collectors.toSet()));

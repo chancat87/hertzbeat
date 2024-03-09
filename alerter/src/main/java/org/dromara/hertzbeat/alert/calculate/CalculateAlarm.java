@@ -46,7 +46,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -348,7 +348,7 @@ public class CalculateAlarm {
             return;
         }
         long currentTimeMill = System.currentTimeMillis();
-        if (metricsData.getCode() != CollectRep.Code.SUCCESS ) {
+        if (metricsData.getCode() != CollectRep.Code.SUCCESS) {
             Alert preAlert = triggeredAlertMap.get(String.valueOf(monitorId));
             Map<String, String> tags = new HashMap<>(6);
             tags.put(CommonConstants.TAG_MONITOR_ID, String.valueOf(monitorId));

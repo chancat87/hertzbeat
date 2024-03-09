@@ -1,12 +1,25 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dromara.hertzbeat.alert.service;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.dromara.hertzbeat.alert.dao.AlertDefineBindDao;
 import org.dromara.hertzbeat.alert.dao.AlertDefineDao;
-import org.dromara.hertzbeat.alert.service.impl.AlertDefineExcelImExportServiceImpl;
-import org.dromara.hertzbeat.alert.service.impl.AlertDefineJsonImExportServiceImpl;
 import org.dromara.hertzbeat.alert.service.impl.AlertDefineServiceImpl;
-import org.dromara.hertzbeat.alert.service.impl.AlertDefineYamlImExportServiceImpl;
 import org.dromara.hertzbeat.common.entity.alerter.AlertDefine;
 import org.dromara.hertzbeat.common.entity.alerter.AlertDefineMonitorBind;
 import org.dromara.hertzbeat.common.entity.manager.Monitor;
@@ -20,7 +33,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +58,7 @@ class AlertDefineServiceTest {
     private List<AlertDefineImExportService> alertDefineImExportServiceList;
 
     @InjectMocks
-    private AlertDefineServiceImpl alertDefineService = new AlertDefineServiceImpl(Collections.emptyList());
+    private AlertDefineServiceImpl alertDefineService;
 
     @BeforeEach
     void setUp() {
@@ -88,7 +100,6 @@ class AlertDefineServiceTest {
     void validate() {
         assertDoesNotThrow(() -> alertDefineService.validate(alertDefine, true));
         assertDoesNotThrow(() -> alertDefineService.validate(alertDefine, false));
-
     }
 
     @Test
@@ -96,7 +107,6 @@ class AlertDefineServiceTest {
         assertDoesNotThrow(() -> alertDefineService.addAlertDefine(alertDefine));
         when(alertDefineDao.save(alertDefine)).thenThrow(new RuntimeException());
         assertThrows(RuntimeException.class, () -> alertDefineService.addAlertDefine(alertDefine));
-
     }
 
     @Test
@@ -115,7 +125,6 @@ class AlertDefineServiceTest {
         doNothing().doThrow(new RuntimeException()).when(alertDefineDao).deleteById(id);
         assertDoesNotThrow(() -> alertDefineService.deleteAlertDefine(id));
         assertThrows(RuntimeException.class, () -> alertDefineService.deleteAlertDefine(id));
-
     }
 
     @Test
@@ -137,8 +146,6 @@ class AlertDefineServiceTest {
         Specification<AlertDefine> specification = mock(Specification.class);
         when(alertDefineDao.findAll(specification, PageRequest.of(1, 1))).thenReturn(Page.empty());
         assertNotNull(alertDefineService.getMonitorBindAlertDefines(specification, PageRequest.of(1, 1)));
-
-
     }
 
     @Test
@@ -156,7 +163,6 @@ class AlertDefineServiceTest {
         when(alertDefineDao.queryAlertDefinesByMonitor(1L, "app", "test")).thenReturn(alertDefineList);
         when(alertDefineDao.queryAlertDefinesByAppAndMetricAndPresetTrueAndEnableTrue("app", "test")).thenReturn(alertDefineList);
         assertNotNull(alertDefineService.getMonitorBindAlertDefines(1L, "app", "test"));
-
     }
 
     @Test

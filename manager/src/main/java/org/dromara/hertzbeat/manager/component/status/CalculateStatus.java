@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dromara.hertzbeat.manager.component.status;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -10,9 +27,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Predicate;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -148,7 +165,7 @@ public class CalculateStatus {
         // combine history every day at 1:00 AM
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nextRun = now.withHour(1).withMinute(0).withSecond(0);
-        if(now.isAfter(nextRun)) {
+        if (now.isAfter(nextRun)) {
             nextRun = nextRun.plusDays(1);
         }
         long delay = Duration.between(now, nextRun).toMillis();
@@ -165,6 +182,9 @@ public class CalculateStatus {
                         .findStatusPageHistoriesByTimestampBetween(preNightTimestamp, midnightTimestamp);
                 Map<Long, StatusPageHistory> statusPageHistoryMap = new HashMap<>(8);
                 for (StatusPageHistory statusPageHistory : statusPageHistoryList) {
+                    statusPageHistory.setNormal(0);
+                    statusPageHistory.setAbnormal(0);
+                    statusPageHistory.setUnknown(0);
                     if (statusPageHistoryMap.containsKey(statusPageHistory.getComponentId())) {
                         StatusPageHistory history = statusPageHistoryMap.get(statusPageHistory.getComponentId());
                         if (statusPageHistory.getState() == CommonConstants.STATUS_PAGE_COMPONENT_STATE_ABNORMAL) {
@@ -186,9 +206,13 @@ public class CalculateStatus {
                         statusPageHistoryMap.put(statusPageHistory.getComponentId(), statusPageHistory);
                     }
                 }
-                statusPageHistoryDao.deleteAllById(statusPageHistoryMap.keySet());
+                statusPageHistoryDao.deleteAll(statusPageHistoryList);
                 for (StatusPageHistory history : statusPageHistoryMap.values()) {
-                    double uptime = (double) history.getNormal() / (double) (history.getNormal() + history.getAbnormal() + history.getUnknown());
+                    double total = history.getNormal() + history.getAbnormal() + history.getUnknown();
+                    double uptime = 0;
+                    if (total > 0) {
+                        uptime = (double) history.getNormal() / total;
+                    }
                     history.setUptime(uptime);
                     if (history.getAbnormal() > 0) {
                         history.setState(CommonConstants.STATUS_PAGE_COMPONENT_STATE_ABNORMAL);

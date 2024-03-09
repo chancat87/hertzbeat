@@ -33,9 +33,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -136,7 +136,8 @@ public class AlertDefinesController {
 
     @PostMapping("/import")
     @Operation(summary = "import alertDefine config", description = "导入告警阀值配置")
-    public void importDefines(MultipartFile file) throws Exception {
+    public ResponseEntity<Message<Void>> importDefines(MultipartFile file) throws Exception {
         alertDefineService.importConfig(file);
+        return ResponseEntity.ok(Message.success("Import success"));
     }
 }

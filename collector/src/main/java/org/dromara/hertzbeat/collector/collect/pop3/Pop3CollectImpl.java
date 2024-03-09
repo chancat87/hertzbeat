@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dromara.hertzbeat.collector.collect.pop3;
 
 import lombok.extern.slf4j.Slf4j;
@@ -94,8 +111,8 @@ public class Pop3CollectImpl extends AbstractCollect {
 
     /**
      * 校验参数
-     * @param metrics
-     * @throws Exception
+     * @param metrics metrics
+     * @throws Exception exception
      */
     private void validateParams(Metrics metrics) throws Exception {
         Pop3Protocol pop3Protocol = metrics.getPop3();
@@ -106,10 +123,10 @@ public class Pop3CollectImpl extends AbstractCollect {
 
     /**
      * 创建POP3连接【支持SSL加密】
-     * @param pop3Protocol
-     * @param ssl
-     * @return
-     * @throws IOException
+     * @param pop3Protocol pop3 Protocol
+     * @param ssl ssl
+     * @return return
+     * @throws IOException IO Exception
      */
     private POP3Client createPOP3Client(Pop3Protocol pop3Protocol, boolean ssl) throws Exception {
         POP3Client pop3Client = null;
@@ -141,14 +158,14 @@ public class Pop3CollectImpl extends AbstractCollect {
 
     /**
      * 获取Pop3指标信息
-     * @param builder
-     * @param pop3Client
-     * @param aliasFields
-     * @param responseTime
+     * @param builder builder
+     * @param pop3Client pop3 client
+     * @param aliasFields alias Fields
+     * @param responseTime response Time
      */
     private void obtainPop3Metrics(CollectRep.MetricsData.Builder builder, POP3Client pop3Client,
                                                  List<String> aliasFields, long responseTime) throws IOException {
-        Map<String,Object> pop3Metrics = parsePop3Metrics(pop3Client, aliasFields);
+        Map<String, Object> pop3Metrics = parsePop3Metrics(pop3Client, aliasFields);
 
         CollectRep.ValueRow.Builder valueRowBuilder = CollectRep.ValueRow.newBuilder();
         for (String alias : aliasFields) {
@@ -166,15 +183,15 @@ public class Pop3CollectImpl extends AbstractCollect {
         builder.addValues(valueRowBuilder);
     }
 
-    private Map<String,Object> parsePop3Metrics(POP3Client pop3Client, List<String> aliasFields) throws IOException {
-        Map<String,Object> pop3Metrics = new HashMap<>(aliasFields.size());
+    private Map<String, Object> parsePop3Metrics(POP3Client pop3Client, List<String> aliasFields) throws IOException {
+        Map<String, Object> pop3Metrics = new HashMap<>(aliasFields.size());
         POP3MessageInfo status = pop3Client.status();
         int emailCount = 0;
         double mailboxSize = 0.0;
         if (status != null) {
             emailCount = status.number;
             // byte -> kb
-            mailboxSize = (double)status.size / 1024.0;
+            mailboxSize = (double) status.size / 1024.0;
             pop3Metrics.put(EMAIL_COUNT, emailCount);
             pop3Metrics.put(MAILBOX_SIZE, mailboxSize);
         }

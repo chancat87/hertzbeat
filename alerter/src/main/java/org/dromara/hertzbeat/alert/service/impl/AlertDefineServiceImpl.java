@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -124,7 +124,8 @@ public class AlertDefineServiceImpl implements AlertDefineService {
         List<AlertDefine> defaultDefines = alertDefineDao.queryAlertDefinesByAppAndMetricAndPresetTrueAndEnableTrue(app, metrics);
         defines.addAll(defaultDefines);
         Set<AlertDefine> defineSet = defines.stream().filter(item -> item.getField() != null).collect(Collectors.toSet());
-        // The alarm thresholds are defined in ascending order of the alarm severity from 0 to 3. The lower the number, the higher the alarm is. That is, the alarm is calculated from the highest alarm threshold
+        // The alarm thresholds are defined in ascending order of the alarm severity from 0 to 3.
+        // The lower the number, the higher the alarm is. That is, the alarm is calculated from the highest alarm threshold
         // 将告警阈值定义从告警级别0-3数字升序排序，数字越小告警基本越高，即从最高的告警阈值开始匹配计算
         return defineSet.stream().sorted(Comparator.comparing(AlertDefine::getPriority))
                 .collect(Collectors.groupingBy(AlertDefine::getField));
